@@ -27,9 +27,13 @@ The dataset itself is fully generated using custom logic to simulate real-world 
 
 ## Pipeline Flow
 
-```
-Raw CSV → staging.sales_raw → Transform & Load → Warehouse (Star Schema) → Dash Dashboard
-```
+```mermaid
+graph LR
+    A[CSV / Sample Data] --> B[Python Ingestion]
+    B --> C[(PostgreSQL Staging)]
+    C --> D[Transform & Load]
+    D --> E[(Warehouse: Star Schema)]
+    E --> F[Dash Dashboard]
 
 **ETL Stages:**
 
