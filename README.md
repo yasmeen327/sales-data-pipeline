@@ -7,7 +7,9 @@
 ![Dash](https://img.shields.io/badge/Dash-latest-00d4aa?logo=plotly)
 ![Linux](https://img.shields.io/badge/Linux-Ubuntu-orange?logo=ubuntu)
 
-An end-to-end data pipeline that ingests raw sales data, transforms it into a star-schema data warehouse, and serves insights through an interactive dashboard — built with Python and PostgreSQL, no drag-and-drop tools.
+An end-to-end data pipeline that generates synthetic sales data, ingests it into a PostgreSQL warehouse, transforms it into a star schema, and serves insights through an interactive dashboard — built entirely with Python and PostgreSQL.
+
+The dataset itself is fully generated using custom logic to simulate real-world sales patterns (customers, products, regions, and transaction behavior).
 
 ---
 
@@ -33,10 +35,11 @@ Raw CSV → staging.sales_raw → Transform & Load → Warehouse (Star Schema) �
 
 | Stage | Script | Description |
 |---|---|---|
-| Generate | `generate_data.py` | Generates synthetic sales CSV data |
+| Generate | `generate_data.py` | Simulates realistic sales data (customers, products, regions, transactions) |
 | Ingest | `ingest_data.py` | Loads raw CSV into staging table |
 | Transform & Load | `transform_load.py` | Builds all dimensions and fact table |
 | Serve | `dashboard.py` | Launches interactive Dash dashboard |
+
 
 ---
 
