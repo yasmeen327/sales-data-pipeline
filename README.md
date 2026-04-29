@@ -35,6 +35,7 @@ graph LR
     D --> E[(Warehouse: Star Schema)]
     E --> F[Dash Dashboard]
 
+
 **ETL Stages:**
 
 | Stage | Script | Description |
