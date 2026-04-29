@@ -1,44 +1,112 @@
-# Sales Data Pipeline + Dashboard
+# Sales Data Pipeline
 
-## What this project is
+![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?logo=postgresql)
+![Pandas](https://img.shields.io/badge/Pandas-latest-150458?logo=pandas)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-latest-red)
+![Dash](https://img.shields.io/badge/Dash-latest-00d4aa?logo=plotly)
+![Linux](https://img.shields.io/badge/Linux-Ubuntu-orange?logo=ubuntu)
 
-This is an end-to-end data pipeline that takes raw sales data, processes it, and turns it into a structured warehouse with a live dashboard on top.
-
-No drag-and-drop tools. Just Python and PostgreSQL.
-
----
-
-## What it does
-
-* Ingests raw CSV data into staging tables
-* Transforms data into a star schema (fact + dimensions)
-* Loads it into a PostgreSQL warehouse
-* Serves insights through an interactive dashboard
+An end-to-end data pipeline that ingests raw sales data, transforms it into a star-schema data warehouse, and serves insights through an interactive dashboard — built with Python and PostgreSQL, no drag-and-drop tools.
 
 ---
 
-## Tech stack
+## Table of Contents
 
-* Python
-* PostgreSQL
-* Pandas
-* SQLAlchemy
-* Dash
-* Linux (VM)
+- [Pipeline Flow](#pipeline-flow)
+- [Technology Stack](#technology-stack)
+- [Quick Start](#quick-start)
+- [Data Warehouse Schema](#data-warehouse-schema)
+- [Dashboard Preview](#dashboard-preview)
+- [Project Structure](#project-structure)
+- [What's Next](#whats-next)
 
 ---
 
-## Data model
+## Pipeline Flow
+
+```
+Raw CSV → staging.sales_raw → Transform & Load → Warehouse (Star Schema) → Dash Dashboard
+```
+
+**ETL Stages:**
+
+| Stage | Script | Description |
+|---|---|---|
+| Generate | `generate_data.py` | Generates synthetic sales CSV data |
+| Ingest | `ingest_data.py` | Loads raw CSV into staging table |
+| Transform & Load | `transform_load.py` | Builds all dimensions and fact table |
+| Serve | `dashboard.py` | Launches interactive Dash dashboard |
+
+---
+
+## Technology Stack
+
+| Layer | Technology | Purpose |
+|---|---|---|
+| Language | Python 3.10+ | Pipeline logic and dashboard |
+| Data Warehouse | PostgreSQL 15 | Staging and warehouse storage |
+| Data Processing | Pandas | Data transformation and prep |
+| DB Connector | SQLAlchemy + psycopg2 | Database connection and queries |
+| Dashboard | Dash + Plotly | Interactive visual dashboard |
+| Environment | Linux (Ubuntu VM) | Pipeline execution environment |
+
+---
+
+## Quick Start
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/Yasmeen327/sales-data-pipeline.git
+cd sales-data-pipeline
+
+# 2. Install dependencies
+pip install pandas sqlalchemy psycopg2-binary dash plotly
+
+# 3. Set up the database
+sudo -u postgres psql -d sales_db -f schema.sql
+
+# 4. Grant permissions
+sudo -u postgres psql -d sales_db -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA warehouse TO pipeline_user;"
+sudo -u postgres psql -d sales_db -c "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA warehouse TO pipeline_user;"
+
+# 5. Generate and ingest data
+python3 generate_data.py
+python3 ingest_data.py
+
+# 6. Run the pipeline
+python3 transform_load.py
+
+# 7. Launch the dashboard
+python3 dashboard.py
+```
+
+Then open: `http://localhost:8080`
+
+---
+
+## Data Warehouse Schema
 
 **Staging**
 
-* `staging.sales_raw`
+| Table | Description |
+|---|---|
+| `staging.sales_raw` | Raw ingested sales records |
 
-**Warehouse**
+**Dimensions**
 
-* `warehouse.dim_products`
-* `warehouse.dim_regions`
-* `warehouse.fact_sales`
+| Table | Description |
+|---|---|
+| `warehouse.dim_date` | Calendar attributes — day, week, month, quarter, year, is_weekend |
+| `warehouse.dim_customers` | Customer master — segment (High / Mid / Low), lifetime value, order history |
+| `warehouse.dim_products` | Product catalog — name, category, price |
+| `warehouse.dim_regions` | Region master — region name, country |
+
+**Fact**
+
+| Table | Description |
+|---|---|
+| `warehouse.fact_sales` | Transactional sales data linked to all four dimensions |
 
 ---
 
@@ -46,78 +114,45 @@ No drag-and-drop tools. Just Python and PostgreSQL.
 
 ![Dashboard](assets/dashboard_overview.png)
 
-## Key Insights
+### Key Metrics
+- **Total Revenue:** $5.37M
+- **Total Orders:** 10,000
+- **Average Ticket:** $537
+- **Unique Customers:** 500
 
-### Top Products
-![Top Products](assets/top_products.png)
-
-### Monthly Trend
-![Monthly Trend](assets/monthly_trend.png)
----
-
-## What the data shows
-
-From 10,000 records:
-
-* Total revenue: $5.37M
-* Orders: 10,000
-* Customers: 500
-* Average ticket: $537
-
-Some quick observations:
-
-* Electronics dominate revenue
-* Notebooks outperform higher-priced items
-* Weekdays perform better than weekends
-* Revenue trend is relatively flat over time
+### Insights
+- Electronics dominate revenue — Laptops account for the largest share by far
+- High-value customers drive a disproportionate portion of total revenue
+- Weekday revenue significantly outperforms weekends
 
 ---
 
-## How to run it
+## Project Structure
 
-```bash
-# install dependencies
-pip install pandas sqlalchemy psycopg2-binary dash
-
-# setup database
-sudo -u postgres psql -f schema.sql
-
-# run pipeline
-python3 transform_load.py
-
-# start dashboard
-python3 dashboard.py
+```
+sales-data-pipeline/
+├── generate_data.py       # Generates synthetic sales CSV
+├── ingest_data.py         # Loads CSV into staging table
+├── transform_load.py      # ETL — builds all dimensions and fact table
+├── dashboard.py           # Interactive Dash dashboard
+├── schema.sql             # Full database schema (staging + warehouse)
+├── sales_data.csv         # Sample data file
+├── assets/                # Dashboard screenshots
+└── README.md
 ```
 
-Then open:
-http://localhost:8080
+---
+
+## What's Next
+
+- [ ] Incremental loading (replace full refresh)
+- [ ] Orchestration with Apache Airflow
+- [ ] Error handling and pipeline logging
+- [ ] Cloud deployment (AWS / GCP)
+- [ ] Add data quality checks
 
 ---
 
-## Project structure
+## License
 
-* `transform_load.py` → main ETL pipeline
-* `ingest_data.py` → loads raw data into staging
-* `schema.sql` → database schema
-* `generate_data.py` → generates sample data
-* `dashboard.py` → dashboard app
-* `assets/` → dashboard screenshots
-
----
-
-## What’s missing / next steps
-
-* Incremental loading (currently full refresh)
-* Proper orchestration (cron works, but not ideal)
-* Error handling and logging
-* Deployment (cloud / public access)
-
----
-
-## Why I built this
-
-To practice building a real pipeline end-to-end:
-
-* not just queries
-* not just dashboards
-* the whole flow from raw data to insights
+This project is licensed under the MIT License.
